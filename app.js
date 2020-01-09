@@ -19,6 +19,27 @@ const app = express();
 const bcrypt = require("bcryptjs");
 
 app.use(passport.initialize());
+app.use(passport.session());
+
+passport.serializeUser((user, callback) => {
+    console.log("SERIALIZADOR");
+    callback(null, user);
+  });
+  
+passport.deserializeUser(async (id, callback) => {
+    console.log("DESERIALIZADOR");
+
+    try {
+        const user = await User.findById(id);
+
+        if (!user) return callback({ message: "El usuario no existe" });
+
+        return callback(null, user);
+    } catch (error) {
+        console.log(error);
+        return callback(error);
+    }
+});
 
 const ops = {
     clientID: client_id,
